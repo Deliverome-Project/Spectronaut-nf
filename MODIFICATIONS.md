@@ -4,6 +4,13 @@ This is a fork of https://github.com/BenCollinsLab/Spectronaut-nf
 (remote `upstream`). `main` mirrors upstream; all modifications live on `ellaine/dev`.
 Nothing here is intended to be contributed back.
 
+**Current upstream base:** `6196952` (`v2.9.0-4-g6196952`, 4 commits after v2.9.0).
+Update this line whenever upstream is merged into `ellaine/dev`. Check it with:
+
+    git describe --tags $(git merge-base ellaine/dev upstream/main)
+
+Don't trust `version` in `nextflow.config`; upstream doesn't always bump it.
+
 List changes with:
 
     git log upstream/main..ellaine/dev --oneline
@@ -17,7 +24,11 @@ List changes with:
 
 ## Analysis runs
 
-Tag the code state of each run (`git tag analysis-YYYY-MM-DD-vN`) and record it here.
+Commit first, then tag each run with an annotated tag that records the upstream base:
 
-| Tag | Date | Params / config | Notes |
-|-----|------|-----------------|-------|
+    git tag -a analysis-YYYY-MM-DD-vN -m "base: $(git describe --tags $(git merge-base HEAD upstream/main)); <params, inputs, notes>"
+
+Add a row below with the same base value.
+
+| Tag | Date | Upstream base | Params / config | Notes |
+|-----|------|---------------|-----------------|-------|
