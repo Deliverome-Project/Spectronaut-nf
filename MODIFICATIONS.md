@@ -1,6 +1,6 @@
 # Modifications from upstream
 
-This is a private-use fork of https://github.com/BenCollinsLab/Spectronaut-nf
+This is a fork of https://github.com/BenCollinsLab/Spectronaut-nf
 (remote `upstream`). `main` mirrors upstream; all modifications live on `ellaine/dev`.
 Nothing here is intended to be contributed back.
 
@@ -13,7 +13,7 @@ List changes with:
 
 | Commit | Files | What and why |
 |--------|-------|--------------|
-| a0991a8 | modules/SN_pulsarStages.nf, nextflow.config, CHANGELOG.md | Fix per-file Pulsar stage 1 (wrap path in `file()`) and replace the invalid `retryDelay` option so retries are delayed. |
+| a0991a8 | modules/SN_pulsarStages.nf, nextflow.config, CHANGELOG.md | Fix per-file Pulsar stage 1 (wrap path in `file()`) and adjust `retryDelay`. |
 
 ## Analysis runs
 
