@@ -13,7 +13,7 @@ List changes with:
 
 | Commit | Files | What and why |
 |--------|-------|--------------|
-| a0991a8 | main.nf, modules, nextflow.config | Fix per-file Pulsar stage 1 (wrap path in `file()`) and replace the invalid `retryDelay` option so retries are delayed. |
+| a0991a8 | modules/SN_pulsarStages.nf, nextflow.config, CHANGELOG.md | Fix per-file Pulsar stage 1 (wrap path in `file()`) and replace the invalid `retryDelay` option so retries are delayed. |
 
 ## Analysis runs
 
