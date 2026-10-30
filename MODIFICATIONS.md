@@ -1,12 +1,12 @@
 # Modifications from upstream
 
 This is a private-use fork of https://github.com/BenCollinsLab/Spectronaut-nf
-(remote `upstream`). `main` mirrors upstream; all modifications live on `dev`.
+(remote `upstream`). `main` mirrors upstream; all modifications live on `ellaine/dev`.
 Nothing here is intended to be contributed back.
 
 List changes with:
 
-    git log upstream/main..dev --oneline
+    git log upstream/main..ellaine/dev --oneline
     git diff upstream/main --stat
 
 ## Changes
