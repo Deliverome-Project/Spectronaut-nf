@@ -10,6 +10,20 @@ a reliable tag-to-tag change history was not available are not reconstructed her
 ### Changed
 - Updated the container profile to bind-mount the host user's `.config` directory into the Apptainer container.
 - Simplified Docker and Apptainer command examples in the container build documentation.
+
+### Fixed
+- Fixed Pulsar Stage 1 with `batch_size: 1` (one task per raw file), which failed before Spectronaut started
+  with `No signature of method: java.lang.String.getBaseName()`. `PULSAR_1_LIB` now wraps the raw-file
+  path in `file()` before taking its base name.
+- Restored the 5-minute wait between retries of Spectronaut tasks. `retryDelay` is not a Nextflow
+  directive (ignored with a warning), so failed tasks were retried immediately; the delay is now applied
+  in `errorStrategy`. A task that starts just after another Spectronaut session ends can fail with
+  `No valid session token available!` and needs the wait to succeed on retry.
+
+### Changed
+- Reduced `maxRetries` for Spectronaut tasks from 50 to 4. With a 5-minute wait before each retry,
+  a task that keeps failing now stops the run after about 25 minutes instead of more than 4 hours.
+
 ## [v2.8.0](https://github.com/BenCollinsLab/Spectronaut-nf/releases/tag/v2.8.0)
 
 ### Changed

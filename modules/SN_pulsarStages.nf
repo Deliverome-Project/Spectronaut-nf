@@ -15,9 +15,9 @@ process PULSAR_1_LIB {
     val pulsarStep
 
     output:
-    tuple val(rawfile), path("${rawfile.getBaseName()}.psar"), emit: psar_with_raw
+    tuple val(rawfile), path("${file(rawfile).getBaseName()}.psar"), emit: psar_with_raw
 
-    // path "${rawfile.getBaseName()}.psar", emit: intermediate_psar // Emit the .psar file created for each rawfile
+    // path "${file(rawfile).getBaseName()}.psar", emit: intermediate_psar // Emit the .psar file created for each rawfile
 
     // Define output and error logs using task variables
     // error = "logs/${task.process}.${task.id}.err"
@@ -33,8 +33,8 @@ process PULSAR_1_LIB {
         -setTemp ${params.tmp_dir}\
        	-r ${rawfile}\
         -o ${params.intermediates_output}\
-        -a ${rawfile.getBaseName()}\
-        -n ${rawfile.getBaseName()}\
+        -a ${file(rawfile).getBaseName()}\
+        -n ${file(rawfile).getBaseName()}\
         -fasta "${FASTA}"\
 		${params.PROP_SEARCH ? " -es ${params.PROP_SEARCH}" : ""}\
 		${PROP_DIA ? "-rs ${PROP_DIA}" : ""}\
