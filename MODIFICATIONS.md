@@ -21,6 +21,8 @@ List changes with:
 | Commit | Files | What and why |
 |--------|-------|--------------|
 | a0991a8 | modules/SN_pulsarStages.nf, nextflow.config, CHANGELOG.md | Fix per-file Pulsar stage 1 (wrap path in `file()`) and adjust `retryDelay`. |
+| 8156afa | modules/SN_pulsarStages.nf, modules/combine_psar.nf, CHANGELOG.md | Stop the library counting each raw file twice: `GENERATE_QSP` reads only stage-1 and `COMBINE_PSAR` only stage-3 `.psar` files, published to `libs/stage1/` and `libs/stage3/`. |
+| 9e23e21 | from_stage1_psar.nf, README.md, CHANGELOG.md | New entry point: start at `GENERATE_QSP` from a list of existing stage-1 `.psar` files (`STAGE1_PSAR_LIST`), searching only the listed runs. |
 
 ## Analysis runs
 
