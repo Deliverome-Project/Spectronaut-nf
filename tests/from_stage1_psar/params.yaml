@@ -1,0 +1,37 @@
+## Example parameters for from_stage1_psar.nf (see README.md in this folder).
+## Relative paths resolve against the launch directory, which run_test.sh sets to this folder.
+
+JOB_NAME: "from_stage1_psar_test"
+spec_bin: "/usr/lib/spectronaut/SpectronautCMD.dll"
+# File whose first line is the licence key. Keep it out of git.
+license: "spectronaut_license.txt"
+
+# Folder holding the raw file of every run in STAGE1_PSAR_LIST (it may hold others; they are ignored)
+rawfile_dir: "raw"
+# One stage-1 .psar per line, named after its raw file (<run>.psar for <run>.raw). Make it with
+# make_stage1_list.sh.
+STAGE1_PSAR_LIST: "stage1_psars.txt"
+FASTA: "../../input_files/uniprotkbHUMAN20240104.bgsfasta"
+
+## Optional
+batch_size: 1
+EXT_PSAR: "null"
+COND_SETUP: "null"   # a condition setup listing only the runs in STAGE1_PSAR_LIST
+REPORT: "null"       # a report schema (.rs)
+# PROP_DIA unset: BGS Factory Settings
+
+executor: 'local'
+executor_queueSize: 2
+
+SN_nf_pulsar_cpus: 16
+SN_nf_pulsar_memory: '96 GB'
+SN_nf_pulsar_time: '24h'
+SN_nf_combine_psar_cpus: 16
+SN_nf_combine_psar_memory: '128 GB'
+SN_nf_combine_psar_time: '24h'
+SN_nf_dia_search_cpus: 16
+SN_nf_dia_search_memory: '96 GB'
+SN_nf_dia_search_time: '24h'
+SN_nf_combine_sne_cpus: 16
+SN_nf_combine_sne_memory: '128 GB'
+SN_nf_combine_sne_time: '24h'

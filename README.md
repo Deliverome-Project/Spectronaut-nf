@@ -173,6 +173,8 @@ It then runs `GENERATE_QSP` → `PULSAR_3_LIB_BATCH` → `COMBINE_PSAR` → `WOR
 - The list is checked before anything runs. A missing or empty `.psar`, a run listed twice, or a run with
   no raw file (or more than one) in `rawfile_dir` stops the run with a list of every problem.
 - Check a list without running Spectronaut with `-preview`.
+- `tests/from_stage1_psar/` has an offline check (`./run_test.sh preview`, no Spectronaut or data
+  needed) and a template for a real run.
 
 ## Output
 | Output Folder | Description |
