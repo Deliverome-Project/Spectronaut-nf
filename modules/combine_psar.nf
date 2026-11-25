@@ -10,7 +10,9 @@ process COMBINE_PSAR{
     val SPEC_BIN               // First input: path to Spectronaut binary
     val LICENSE                // Second input: license key
     path FASTA
-    path lib_output            //
+    // The stage-3 .psar files passed in, staged into their own folder so -sad reads exactly these
+    // (not the shared publish folder, which also held the stage-1 files and so counted every run twice)
+    path stage3_psars, stageAs: 'stage3_psars/*'
     val EXT_PSAR
     val PROP_DIA
 
@@ -23,7 +25,7 @@ process COMBINE_PSAR{
 
 	dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\
-	-sad ${params.intermediate_psar}\
+	-sad stage3_psars\
 	-k ${params.JOB_NAME}\
         -o ${params.lib_output}\
         -n ${params.JOB_NAME}\

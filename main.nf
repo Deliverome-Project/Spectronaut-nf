@@ -21,6 +21,17 @@ def resolveFilePath(val) {
 	return f.exists() ? f.toAbsolutePath().toString() : file("${launchDir}/${val}").toAbsolutePath().toString()
 }
 
+// Existing Pulsar .psar for one raw file: <dir>/<raw file name without extension>.psar.
+// Stops the run if it is missing or empty, before any task uses it.
+def psarFor(dir, raw) {
+	def run = file(raw).getBaseName()
+	def psar = file("${resolveFilePath(dir)}/${run}.psar")
+	if (!psar.exists() || psar.size() == 0) {
+		error "No .psar for raw file ${raw}: expected a non-empty ${psar}"
+	}
+	return psar
+}
+
 workflow {
 
 	// ============================================================
@@ -180,7 +191,16 @@ workflow {
 	
 	println "Batch size: ${batchSize}"
 
-	if (batchSize > 1) {
+	// Optional: STAGE1_PSAR_DIR starts the run at GENERATE_QSP from existing Pulsar stage-1 .psar files
+	// instead of running PULSAR_1_LIB (unset: run every stage, as before). The folder holds one <run>.psar
+	// per raw file in rawfile_dir, named after the raw file; the runs in rawfile_dir decide which .psar
+	// files are used, so the folder may hold more runs than rawfile_dir.
+	if (params.STAGE1_PSAR_DIR) {
+		log.info "Starting at GENERATE_QSP from stage-1 .psar files in ${params.STAGE1_PSAR_DIR}"
+		pulsarStep1_output = rawfiles_for_lib.map { raw -> tuple(raw, psarFor(params.STAGE1_PSAR_DIR, raw)) }
+		rawf_mapped_psar = pulsarStep1_output.map{ _rawfile, psar -> psar }
+
+	} else if (batchSize > 1) {
 		rawfiles_for_lib
 		.buffer(size: batchSize, remainder: true) // Group into batches of user-defined size
 		.ifEmpty { error "No batches were produced. Check the rawfile count." }

@@ -4,7 +4,7 @@ process PULSAR_1_LIB {
 
     label 'SN_nf_pulsar'
 	// Use publishDir to save the output to the out_lib directory
-	publishDir "${params.intermediate_psar}", mode: 'copy'
+	publishDir "${params.intermediate_psar}/stage1", mode: 'copy'
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
@@ -46,7 +46,7 @@ process PULSAR_1_LIB_BATCH {
 
     label 'SN_nf_pulsar'
     // Use publishDir to save the intermediate output to the intermediates directory
-    publishDir "${params.intermediate_psar}", mode: 'copy', pattern: '*.psar'
+    publishDir "${params.intermediate_psar}/stage1", mode: 'copy', pattern: '*.psar'
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
@@ -93,7 +93,9 @@ process GENERATE_QSP{
     val SPEC_BIN               // First input: path to Spectronaut binary
     val LICENSE                // Second input: license key
     val FASTA
-    path intermediates_output
+    // The stage-1 .psar files passed in, staged into their own folder so -sad reads exactly these
+    // (not the shared publish folder, which also holds stage-3 files)
+    path stage1_psars, stageAs: 'stage1_psars/*'
     val PROP_DIA
     val pulsarStep
 
@@ -106,7 +108,7 @@ process GENERATE_QSP{
 
         dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\
-        -sad ${params.intermediate_psar}\
+        -sad stage1_psars\
         -k ${params.JOB_NAME}\
         -o .\
 		--noOutputSubfolder\
@@ -122,7 +124,7 @@ process PULSAR_3_LIB {
 
     label 'SN_nf_pulsar'
     // Use publishDir to save the output to the out_lib directory
-    publishDir "${params.intermediate_psar}", mode: 'copy'
+    publishDir "${params.intermediate_psar}/stage3", mode: 'copy'
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
@@ -165,7 +167,7 @@ process PULSAR_3_LIB {
 process PULSAR_3_LIB_BATCH {
 
     label 'SN_nf_pulsar'
-    publishDir "${params.intermediate_psar}", mode: 'copy'
+    publishDir "${params.intermediate_psar}/stage3", mode: 'copy'
 
     input:
     val SPEC_BIN
