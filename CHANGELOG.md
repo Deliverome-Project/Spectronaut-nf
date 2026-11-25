@@ -5,6 +5,14 @@ This file records user-facing changes identified by comparing version tags in th
 Entries are based on repository contents and tagged commits. Older versions for which
 a reliable tag-to-tag change history was not available are not reconstructed here.
 
+## [Unreleased]
+
+### Added
+- `from_stage1_psar.nf`: starts the pipeline at `GENERATE_QSP` from a list of existing Pulsar stage-1
+  `.psar` files (`STAGE1_PSAR_LIST`), so stage 1 doesn't have to be rerun. Only the listed runs are used for
+  the library and the DIA search, so one subset of a `rawfile_dir` (for example one experimental arm) can be
+  searched on its own. The list is checked against `rawfile_dir` before any task starts.
+
 ## [v2.9.0]()
 
 ### Changed

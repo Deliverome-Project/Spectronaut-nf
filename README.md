@@ -147,6 +147,33 @@ nextflow -bg run /path/to/main.nf \
 ```
 When users `-resume` in their command, Nextflow automatically resumes the search from previously completed tasks (Cached).
 
+## Start from existing stage-1 `.psar` files
+`main.nf` always starts at Pulsar stage 1. To reuse stage-1 `.psar` files from an earlier run and start at
+`GENERATE_QSP`, run `from_stage1_psar.nf` instead, with one extra parameter in `params.yaml`:
+
+```
+STAGE1_PSAR_LIST: "stage1_psars.txt"   # one stage-1 .psar path per line; '#' lines and blank lines ignored
+```
+
+```
+nextflow -bg run /path/to/from_stage1_psar.nf \
+         -params-file /path/to/params.yaml >> nextflow_cmd.log
+```
+
+It then runs `GENERATE_QSP` → `PULSAR_3_LIB_BATCH` → `COMBINE_PSAR` → `WORKFLOW_DIA` → `MERGE_SNE` (or
+`COMBINE_SNE` above `max_files_for_ManageSNE`), exactly as `main.nf` does.
+
+- Each `.psar` must come from one raw file and be named after it (`<run>.psar` for `<run>.raw`), as
+  `PULSAR_1_LIB` writes it with `batch_size: 1`. Batch-mode stage-1 files (`1.psar`, `2.psar`, …) can't be
+  matched to their raw files and are rejected.
+- The matching raw file must be in `rawfile_dir`. Only the listed runs are searched, both for the library
+  and the DIA search, so a subset can point at the same `rawfile_dir` as the full set.
+- `sample_size` and `excludePattern` don't apply; the list decides which runs are used. `batch_size` still
+  sets the DIA batch size (`batch_size × 2` files per task when above 1).
+- The list is checked before anything runs. A missing or empty `.psar`, a run listed twice, or a run with
+  no raw file (or more than one) in `rawfile_dir` stops the run with a list of every problem.
+- Check a list without running Spectronaut with `-preview`.
+
 ## Output
 | Output Folder | Description |
 |---------------|-------------|
