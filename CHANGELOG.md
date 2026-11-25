@@ -19,10 +19,19 @@ a reliable tag-to-tag change history was not available are not reconstructed her
   directive (ignored with a warning), so failed tasks were retried immediately; the delay is now applied
   in `errorStrategy`. A task that starts just after another Spectronaut session ends can fail with
   `No valid session token available!` and needs the wait to succeed on retry.
+- Fixed the experiment-wide library counting every raw file twice. Pulsar stages 1 and 3 published their
+  `.psar` files to the same `intermediates/libs/` folder, and `COMBINE_PSAR` read that whole folder, so it
+  combined the stage-1 and stage-3 archives (6 runs for 3 raw files). `GENERATE_QSP` now reads only the
+  stage-1 `.psar` files and `COMBINE_PSAR` only the stage-3 `.psar` files, each staged into its task's work
+  directory instead of read from the shared publish folder. This also removes a race in which a step could
+  start before the previous step's files had finished copying to that folder.
 
 ### Changed
 - Reduced `maxRetries` for Spectronaut tasks from 50 to 4. With a 5-minute wait before each retry,
   a task that keeps failing now stops the run after about 25 minutes instead of more than 4 hours.
+- Pulsar stage 1 and stage 3 `.psar` files are now published to `intermediates/libs/stage1/` and
+  `intermediates/libs/stage3/`. In batch mode, stage-3 files (`1.psar`, `2.psar`, …) previously overwrote
+  the stage-1 files with the same names.
 
 ## [v2.8.0](https://github.com/BenCollinsLab/Spectronaut-nf/releases/tag/v2.8.0)
 
