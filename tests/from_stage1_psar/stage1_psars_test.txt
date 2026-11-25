@@ -1,0 +1,4 @@
+# Two demo liver runs (G and I, 40 min gradient). Stage-1 .psar files from an earlier main.nf run with
+# batch_size 1, made with the FASTA set in params.yaml.
+/home/ssm-user/spectronaut_runs/demo_liver/intermediates/libs/C_D160626_S313-liver-G-040min_MHRM_R01_T0.psar
+/home/ssm-user/spectronaut_runs/demo_liver/intermediates/libs/C_D160626_S313-liver-I-040min_MHRM_R01_T0.psar

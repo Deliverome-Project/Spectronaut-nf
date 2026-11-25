@@ -1,0 +1,39 @@
+## Example parameters for from_stage1_psar.nf (see README.md in this folder).
+## Relative paths resolve against the launch directory, which run_test.sh sets to this folder.
+
+JOB_NAME: "demo_liver_from_stage1"
+spec_bin: "/usr/lib/spectronaut/SpectronautCMD.dll"
+# File whose first line is the licence key. Keep it out of git.
+license: "spectronaut_license.txt"
+
+# Folder holding the raw file of every run in STAGE1_PSAR_LIST (it may hold others; they are ignored)
+rawfile_dir: "/home/ssm-user/data/demo"
+# One stage-1 .psar per line, named after its raw file (<run>.psar for <run>.raw).
+# stage1_psars_test.txt is the demo liver example (2 runs).
+STAGE1_PSAR_LIST: "stage1_psars_test.txt"
+# Must be the FASTA stage 1 was run with: here uniprot_sprot_2018-01-01_HUMAN_ISOFORMS.fasta, converted with
+# `SpectronautCMD convertFASTA`.
+FASTA: "/home/ssm-user/data/fasta/bgsfasta/uniprot_sprot_2018-01-01_HUMAN_ISOFORMS.bgsfasta"
+
+## Optional
+batch_size: 1
+EXT_PSAR: "null"
+COND_SETUP: "null"   # a condition setup listing the runs in STAGE1_PSAR_LIST
+REPORT: "../../input_files/Precursor_fragment_info.rs"   # the report schema shipped with the pipeline
+# PROP_DIA unset: BGS Factory Settings
+
+executor: 'local'
+executor_queueSize: 2
+
+SN_nf_pulsar_cpus: 16
+SN_nf_pulsar_memory: '96 GB'
+SN_nf_pulsar_time: '24h'
+SN_nf_combine_psar_cpus: 16
+SN_nf_combine_psar_memory: '128 GB'
+SN_nf_combine_psar_time: '24h'
+SN_nf_dia_search_cpus: 16
+SN_nf_dia_search_memory: '96 GB'
+SN_nf_dia_search_time: '24h'
+SN_nf_combine_sne_cpus: 16
+SN_nf_combine_sne_memory: '128 GB'
+SN_nf_combine_sne_time: '24h'
