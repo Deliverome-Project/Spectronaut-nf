@@ -13,3 +13,13 @@ dag*.svg
 .DS_Store
 .vscode/
 .idea/
+
+# tests/from_stage1_psar: licence key, run-specific inputs and outputs of a real run
+tests/from_stage1_psar/spectronaut_license.txt
+tests/from_stage1_psar/stage1_psars.txt
+tests/from_stage1_psar/raw/
+tests/from_stage1_psar/intermediates/
+tests/from_stage1_psar/out_lib/
+tests/from_stage1_psar/out_dia/
+tests/from_stage1_psar/logs/
+tests/from_stage1_psar/tmp/

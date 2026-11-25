@@ -1,0 +1,6 @@
+# S3E12 arm D tissue (SDC/DDM, SAX beads): 3 injections of one digest.
+# Stage-1 .psar files from run_one.sh on i-03d0eed9c7ef6c3b1 (same command as PULSAR_1_LIB, batch_size 1),
+# also at processed://sprint3/s3e12-proteome-solubilization/spectronaut/batch/tissue/stage1/<run>/.
+/home/ssm-user/spectronaut_runs/s3e12_tissue_stage1/out/20261114_AnMe_QC_S3E12_30SPD_pepsep15cm_F40_100vw5ms_DT_01/20261114_AnMe_QC_S3E12_30SPD_pepsep15cm_F40_100vw5ms_DT_01.psar
+/home/ssm-user/spectronaut_runs/s3e12_tissue_stage1/out/20261114_AnMe_QC_S3E12_30SPD_pepsep15cm_F40_100vw5ms_DT_02/20261114_AnMe_QC_S3E12_30SPD_pepsep15cm_F40_100vw5ms_DT_02.psar
+/home/ssm-user/spectronaut_runs/s3e12_tissue_stage1/out/20261114_AnMe_QC_S3E12_30SPD_pepsep15cm_F40_100vw5ms_DT_03/20261114_AnMe_QC_S3E12_30SPD_pepsep15cm_F40_100vw5ms_DT_03.psar

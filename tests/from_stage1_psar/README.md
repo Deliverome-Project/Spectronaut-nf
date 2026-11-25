@@ -8,8 +8,11 @@ a template for a real run.
 |---|---|
 | `run_test.sh` | `preview`: offline check. `run`: real run. `check`: checks a real run's outputs. |
 | `make_stage1_list.sh` | Writes `STAGE1_PSAR_LIST` from a folder of stage-1 `.psar` files. |
-| `params.yaml` | Parameters for a real run. Edit the paths. |
+| `params.yaml` | Parameters for a real run, set up for the S3E12 arm D tissue example. Edit the paths for other data. |
+| `stage1_psars_test.txt` | Example run list: the three S3E12 arm D tissue runs (`DT_01`–`DT_03`). |
 | `local.config` | Single-host settings: no SLURM partitions, and inputs staged as hard links. |
+| `s3e12_ConditionSetup_tissue_batch.tsv` | Condition setup used by `params.yaml`: all 52 S3E12 tissue runs. Copied unchanged from deliverome-analysis `analysis/sprint3/s3e12-proteome-solubilization/` at commit 13d580a4. |
+| `deliverome_lean_w_filt.rs` | Report schema used by `params.yaml`, the Deliverome lean report with filters. Copied unchanged from deliverome-analysis `scratch/ellaine/spectronaut-report-schema/` at commit 13d580a4. |
 
 ## Offline check (no Spectronaut, licence or data)
 
@@ -34,13 +37,17 @@ You need Spectronaut, a licence, the raw files, and one stage-1 `.psar` per raw 
 `intermediates/libs/stage1/`.
 
 1. Put the licence key on the first line of `spectronaut_license.txt` in this folder. It is git-ignored.
-2. Edit `params.yaml`: `rawfile_dir`, `FASTA`, and optionally `COND_SETUP` and `REPORT`. A condition
-   setup must list only the runs being searched.
-3. Write the run list. For example, the three S3E12 arm D tissue runs:
+2. Edit `params.yaml`: `rawfile_dir` and `FASTA`. `COND_SETUP` is set to
+   `s3e12_ConditionSetup_tissue_batch.tsv` and `REPORT` to `deliverome_lean_w_filt.rs`, both in this folder.
+   The condition setup lists all 52 S3E12 tissue runs; an arm search lists only some of them.
+3. Set `STAGE1_PSAR_LIST`. It points to `stage1_psars_test.txt`, the S3E12 arm D tissue example, which was
+   made with:
 
    ```bash
-   ./make_stage1_list.sh /path/to/stage1_psars '*_DT_0*' > stage1_psars.txt
+   ./make_stage1_list.sh /home/ssm-user/spectronaut_runs/s3e12_tissue_stage1/out '*_DT_0*'
    ```
+
+   For other runs, write a new list the same way.
 
 4. Check the list without running Spectronaut, then run:
 
@@ -60,4 +67,4 @@ You need Spectronaut, a licence, the raw files, and one stage-1 `.psar` per raw 
    `out_dia/`.
 
 The run's output folders (`intermediates/`, `out_lib/`, `out_dia/`, `logs/`, `tmp/`, `work/`) are
-written here and git-ignored.
+written here and git-ignored (see the repository's root `.gitignore`).

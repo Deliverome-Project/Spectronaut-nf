@@ -1,23 +1,29 @@
 ## Example parameters for from_stage1_psar.nf (see README.md in this folder).
 ## Relative paths resolve against the launch directory, which run_test.sh sets to this folder.
 
-JOB_NAME: "from_stage1_psar_test"
+JOB_NAME: "S3E12_tissue_armD_from_stage1"
 spec_bin: "/usr/lib/spectronaut/SpectronautCMD.dll"
 # File whose first line is the licence key. Keep it out of git.
 license: "spectronaut_license.txt"
 
 # Folder holding the raw file of every run in STAGE1_PSAR_LIST (it may hold others; they are ignored)
-rawfile_dir: "raw"
-# One stage-1 .psar per line, named after its raw file (<run>.psar for <run>.raw). Make it with
-# make_stage1_list.sh.
-STAGE1_PSAR_LIST: "stage1_psars.txt"
-FASTA: "../../input_files/uniprotkbHUMAN20240104.bgsfasta"
+rawfile_dir: "/home/ssm-user/data/thermo/s3e12/tissue"
+# One stage-1 .psar per line, named after its raw file (<run>.psar for <run>.raw). Make one with
+# make_stage1_list.sh. stage1_psars_test.txt is the S3E12 arm D tissue example (3 runs).
+STAGE1_PSAR_LIST: "stage1_psars_test.txt"
+# Must be the FASTA stage 1 was run with. S3E12: external://search-fasta/
+# human-sp-iso_cont-universal-and-cell-culture_irt/2026_03/search.fasta, converted with convertFASTA.
+FASTA: "/home/ssm-user/data/fasta/bgsfasta/search-fasta_2026_03/search.bgsfasta"
 
 ## Optional
 batch_size: 1
 EXT_PSAR: "null"
-COND_SETUP: "null"   # a condition setup listing only the runs in STAGE1_PSAR_LIST
-REPORT: "null"       # a report schema (.rs)
+# Condition setup: S3E12 tissue batch (52 runs), copied unchanged from deliverome-analysis @ 13d580a4
+# analysis/sprint3/s3e12-proteome-solubilization/s3e12_ConditionSetup_tissue_batch.tsv (sha256 d9ba5129...c27b6)
+COND_SETUP: "s3e12_ConditionSetup_tissue_batch.tsv"
+# Report schema: Deliverome lean report with filters, copied unchanged from deliverome-analysis @ 13d580a4
+# scratch/ellaine/spectronaut-report-schema/deliverome_lean_w_filt.rs (sha256 6179ce7a...91efe)
+REPORT: "deliverome_lean_w_filt.rs"
 # PROP_DIA unset: BGS Factory Settings
 
 executor: 'local'

@@ -56,18 +56,20 @@ YAML
     echo "PASS: preview"
 }
 
+list_file() { sed -n 's/^STAGE1_PSAR_LIST: *"\(.*\)"/\1/p' "$HERE/params.yaml"; }
+
 run() {
-    cd "$HERE"
+    cd "$HERE"; local list; list=$(list_file)
     [[ -s spectronaut_license.txt ]] || fail "put the licence key on the first line of $HERE/spectronaut_license.txt"
-    [[ -s stage1_psars.txt ]] || fail "make the list first: ./make_stage1_list.sh <psar folder> [pattern] > stage1_psars.txt"
-    echo "Runs: $(grep -cv -e '^#' -e '^$' stage1_psars.txt)"
+    [[ -s $list ]] || fail "no run list '$list': ./make_stage1_list.sh <psar folder> [pattern] > $list"
+    echo "Runs in $list: $(grep -cv -e '^#' -e '^$' "$list")"
     nextflow run "$PIPELINE" -params-file params.yaml -c local.config "$@"
 }
 
 check() {
     cd "$HERE"
     local job n; job=$(sed -n 's/^JOB_NAME: *"\(.*\)"/\1/p' params.yaml)
-    n=$(grep -cv -e '^#' -e '^$' stage1_psars.txt)
+    n=$(grep -cv -e '^#' -e '^$' "$(list_file)")
     [[ -s intermediates/$job.qsp ]] || fail "no QSP: intermediates/$job.qsp"
     local s3; s3=$(find intermediates/libs/stage3 -name '*.psar' 2>/dev/null | wc -l)
     [[ $s3 -eq $n ]] || fail "stage-3 .psar files: $s3, expected $n"
