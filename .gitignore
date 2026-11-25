@@ -1,0 +1,15 @@
+# Nextflow runtime
+.nextflow/
+.nextflow.log*
+work/
+results/
+timeline*.html
+report*.html
+trace*.txt
+dag*.html
+dag*.svg
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
