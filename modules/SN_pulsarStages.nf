@@ -104,6 +104,9 @@ process GENERATE_QSP{
 
     script:
     """
+        # Run-count checks (bin/check_run_count.sh): stop on a mismatch when EXPECTED_RUNS is set
+        check_run_count.sh "GENERATE_QSP input: stage-1 .psar files" \$(find -L stage1_psars -maxdepth 1 -name '*.psar' | wc -l) "${params.EXPECTED_RUNS ?: ''}"
+
         dotnet ${SPEC_BIN} activate ${LICENSE}
 
         dotnet ${SPEC_BIN} lg -se Pulsar\
@@ -116,6 +119,11 @@ process GENERATE_QSP{
         -fasta ${FASTA}\
         ${PROP_DIA ? "-rs ${PROP_DIA}" : ""}\
         --pulsarStage ${pulsarStep}
+
+        # Spectronaut can build the QSP from fewer runs than it is given, without a warning; its
+        # ResultSummary reports how many it used ("Number of Raw Files")
+        check_run_count.sh "GENERATE_QSP used (Number of Raw Files)" \
+            "\$(awk -F'\t' '\$1 == "Number of Raw Files" {print \$2}' ${params.JOB_NAME}_ResultSummary.txt)" "${params.EXPECTED_RUNS ?: ''}"
     """
 
 }
