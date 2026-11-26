@@ -21,6 +21,17 @@ def resolveFilePath(val) {
 	return f.exists() ? f.toAbsolutePath().toString() : file("${launchDir}/${val}").toAbsolutePath().toString()
 }
 
+// Existing Pulsar .psar for one raw file: <dir>/<raw file name without extension>.psar.
+// Stops the run if it is missing or empty, before any task uses it.
+def psarFor(dir, raw) {
+	def run = file(raw).getBaseName()
+	def psar = file("${resolveFilePath(dir)}/${run}.psar")
+	if (!psar.exists() || psar.size() == 0) {
+		error "No .psar for raw file ${raw}: expected a non-empty ${psar}"
+	}
+	return psar
+}
+
 workflow {
 
 	// ============================================================
@@ -176,11 +187,40 @@ workflow {
 	
 	// Process each raw file in parallel
 	
+	// EXPECTED_RUNS: check the raw files and condition setup before any task starts
+	if (params.EXPECTED_RUNS) {
+		def expected = params.EXPECTED_RUNS.toString().toInteger()
+		def raws = file(params.rawfile_dir).listFiles()?.findAll { f ->
+			(f.isFile() && ['.raw', '.RAW', '.wiff', '.mzML'].any { ext -> f.name.endsWith(ext) }) || (f.isDirectory() && f.name.endsWith('.d'))
+		} ?: []
+		if (raws.size() != expected) {
+			if (params.RUN_COUNT_ACTION == 'warn') { log.warn "RUN_COUNT_WARNING: ${raws.size()} raw files in ${params.rawfile_dir}, expected ${expected} (EXPECTED_RUNS); continuing (RUN_COUNT_ACTION=warn)" }
+			else { error "RUN_COUNT_MISMATCH: ${raws.size()} raw files in ${params.rawfile_dir}, expected ${expected} (EXPECTED_RUNS)" }
+		}
+		if (COND_SETUP) {
+			def rows = file(COND_SETUP).readLines().drop(1).findAll { line -> line.trim() }
+			if (rows.size() != expected) {
+				if (params.RUN_COUNT_ACTION == 'warn') { log.warn "RUN_COUNT_WARNING: ${rows.size()} rows in ${COND_SETUP}, expected ${expected} (EXPECTED_RUNS); continuing (RUN_COUNT_ACTION=warn)" }
+				else { error "RUN_COUNT_MISMATCH: ${rows.size()} rows in ${COND_SETUP}, expected ${expected} (EXPECTED_RUNS)" }
+			}
+		}
+		log.info "EXPECTED_RUNS ${expected}: ${raws.size()} raw files" + (COND_SETUP ? " and ${file(COND_SETUP).readLines().drop(1).findAll { line -> line.trim() }.size()} condition setup rows" : "")
+	}
+
 	def batchSize = params.batch_size ? params.batch_size.toInteger() : 1
 	
 	println "Batch size: ${batchSize}"
 
-	if (batchSize > 1) {
+	// Optional: STAGE1_PSAR_DIR starts the run at GENERATE_QSP from existing Pulsar stage-1 .psar files
+	// instead of running PULSAR_1_LIB (unset: run every stage, as before). The folder holds one <run>.psar
+	// per raw file in rawfile_dir, named after the raw file; the runs in rawfile_dir decide which .psar
+	// files are used, so the folder may hold more runs than rawfile_dir.
+	if (params.STAGE1_PSAR_DIR) {
+		log.info "Starting at GENERATE_QSP from stage-1 .psar files in ${params.STAGE1_PSAR_DIR}"
+		pulsarStep1_output = rawfiles_for_lib.map { raw -> tuple(raw, psarFor(params.STAGE1_PSAR_DIR, raw)) }
+		rawf_mapped_psar = pulsarStep1_output.map{ _rawfile, psar -> psar }
+
+	} else if (batchSize > 1) {
 		rawfiles_for_lib
 		.buffer(size: batchSize, remainder: true) // Group into batches of user-defined size
 		.ifEmpty { error "No batches were produced. Check the rawfile count." }

@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Stand-in for `dotnet SpectronautCMD.dll ...` used by run_test.sh --dry. It runs no search: it logs the
+# call to $FAKE_LOG (if set) and writes the files each Spectronaut-nf step expects, including the summary
+# tables the run-count checks read, so the pipeline's wiring (which tasks run, which files each task is
+# given, how many runs each step reports using) can be checked without a licence.
+shift  # the .dll path
+[[ -n ${FAKE_LOG:-} ]] && echo "$(basename "$PWD") $*" >> "$FAKE_LOG"
+cmd=$1; shift
+declare -A o
+while (($#)); do
+	case $1 in
+		-n|-a|-k|-r|-o|-d|-sad|-sa|--pulsarStage) o[$1]=$2; shift 2 ;;
+		*) shift ;;
+	esac
+done
+stage=${o[--pulsarStage]:-}
+ts=$(date +%Y%m%d_%H%M%S)
+n_psar() { find -L "$1" -maxdepth 1 -name '*.psar' | wc -l; }
+summary() { printf 'Number of Raw Files\t%s\n' "$2" > "$1"; }  # summary <file> <runs used>
+
+case "$cmd/$stage" in
+	lg/pulsarStep1) echo stage1 > "${o[-n]}.psar" ;;
+	lg/pulsarStep2)  # GENERATE_QSP: -o . --noOutputSubfolder
+		echo qsp > "${o[-n]}.qsp"
+		summary "${o[-n]}_ResultSummary.txt" "$(n_psar "${o[-sad]}")" ;;
+	lg/pulsarStep3) echo stage3 > "$(basename "${o[-a]}").psar" ;;
+	lg/)  # COMBINE_PSAR: kit in the work folder, summary in <-o>/<time>_<name>/
+		echo kit > "${o[-k]}.kit"
+		mkdir -p "${o[-o]}/${ts}_${o[-n]}"
+		summary "${o[-o]}/${ts}_${o[-n]}/${o[-n]}_ResultSummary.txt" "$(n_psar "${o[-sad]}")" ;;
+	diaanalysis/)  # per-run result: <-o>/<time>_<run>/<time>_<run>.sne
+		mkdir -p "${o[-o]}/${ts}_${o[-n]}"
+		echo sne > "${o[-o]}/${ts}_${o[-n]}/${ts}_${o[-n]}.sne" ;;
+	manageSNE/)  # merge: one row per per-run .sne in <-o>/<time>_<name>/<name>_RunIdentifications.tsv
+		mkdir -p "${o[-o]}/${ts}_${o[-n]}"
+		{ echo "R.FileName"
+		  find "${o[-d]}" -mindepth 2 -maxdepth 2 -name '*.sne' -not -path "*_${o[-n]}/*" -exec basename {} .sne \;
+		} > "${o[-o]}/${ts}_${o[-n]}/${o[-n]}_RunIdentifications.tsv" ;;
+esac
+exit 0
