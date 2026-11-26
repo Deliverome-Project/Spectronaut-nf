@@ -194,15 +194,17 @@ workflow {
 			(f.isFile() && ['.raw', '.RAW', '.wiff', '.mzML'].any { ext -> f.name.endsWith(ext) }) || (f.isDirectory() && f.name.endsWith('.d'))
 		} ?: []
 		if (raws.size() != expected) {
-			error "RUN_COUNT_MISMATCH: ${raws.size()} raw files in ${params.rawfile_dir}, expected ${expected} (EXPECTED_RUNS)"
+			if (params.RUN_COUNT_ACTION == 'warn') { log.warn "RUN_COUNT_WARNING: ${raws.size()} raw files in ${params.rawfile_dir}, expected ${expected} (EXPECTED_RUNS); continuing (RUN_COUNT_ACTION=warn)" }
+			else { error "RUN_COUNT_MISMATCH: ${raws.size()} raw files in ${params.rawfile_dir}, expected ${expected} (EXPECTED_RUNS)" }
 		}
 		if (COND_SETUP) {
 			def rows = file(COND_SETUP).readLines().drop(1).findAll { line -> line.trim() }
 			if (rows.size() != expected) {
-				error "RUN_COUNT_MISMATCH: ${rows.size()} rows in ${COND_SETUP}, expected ${expected} (EXPECTED_RUNS)"
+				if (params.RUN_COUNT_ACTION == 'warn') { log.warn "RUN_COUNT_WARNING: ${rows.size()} rows in ${COND_SETUP}, expected ${expected} (EXPECTED_RUNS); continuing (RUN_COUNT_ACTION=warn)" }
+				else { error "RUN_COUNT_MISMATCH: ${rows.size()} rows in ${COND_SETUP}, expected ${expected} (EXPECTED_RUNS)" }
 			}
 		}
-		log.info "EXPECTED_RUNS ${expected}: ${raws.size()} raw files" + (COND_SETUP ? " and condition setup rows match" : " match")
+		log.info "EXPECTED_RUNS ${expected}: ${raws.size()} raw files" + (COND_SETUP ? " and ${file(COND_SETUP).readLines().drop(1).findAll { line -> line.trim() }.size()} condition setup rows" : "")
 	}
 
 	def batchSize = params.batch_size ? params.batch_size.toInteger() : 1

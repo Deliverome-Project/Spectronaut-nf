@@ -21,8 +21,8 @@ process COMBINE_PSAR{
 
     script:
     """
-	# Run-count checks (bin/check_run_count.sh): stop on a mismatch when EXPECTED_RUNS is set
-	check_run_count.sh "COMBINE_PSAR input: stage-3 .psar files" \$(find -L stage3_psars -maxdepth 1 -name '*.psar' | wc -l) "${params.EXPECTED_RUNS ?: ''}"
+	# Run-count checks (bin/check_run_count.sh): stop (or warn, RUN_COUNT_ACTION) on a mismatch when EXPECTED_RUNS is set
+	check_run_count.sh "COMBINE_PSAR input: stage-3 .psar files" \$(find -L stage3_psars -maxdepth 1 -name '*.psar' | wc -l) "${params.EXPECTED_RUNS ?: ''}" "${params.RUN_COUNT_ACTION}"
 
 	dotnet ${SPEC_BIN} activate ${LICENSE}
 
@@ -40,7 +40,7 @@ process COMBINE_PSAR{
 	# Spectronaut writes this library's summary to a new <time>_<JOB_NAME> folder in lib_output
 	out=\$(ls -td ${params.lib_output}/*_${params.JOB_NAME}/ | head -1)
 	check_run_count.sh "COMBINE_PSAR used (Number of Raw Files)" \
-	    "\$(awk -F'\t' '\$1 == "Number of Raw Files" {print \$2}' "\$out/${params.JOB_NAME}_ResultSummary.txt")" "${params.EXPECTED_RUNS ?: ''}"
+	    "\$(awk -F'\t' '\$1 == "Number of Raw Files" {print \$2}' "\$out/${params.JOB_NAME}_ResultSummary.txt")" "${params.EXPECTED_RUNS ?: ''}" "${params.RUN_COUNT_ACTION}"
     """
 
 }
