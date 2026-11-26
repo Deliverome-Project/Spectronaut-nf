@@ -13,6 +13,14 @@ a reliable tag-to-tag change history was not available are not reconstructed her
   `rawfile_dir` is paired with its `.psar`, so pointing `rawfile_dir` at a subset of runs (for example one
   experimental arm, as hard links) searches only that subset. A missing or empty `.psar` stops the run
   before any task starts. Unset (the default), every stage runs as before.
+- `EXPECTED_RUNS`: the number of runs the experiment must use. When set, the run stops (`RUN_COUNT_MISMATCH`)
+  if the raw files or condition-setup rows at launch, the files given to `GENERATE_QSP`, `COMBINE_PSAR` or
+  `MERGE_SNE`, or the runs those steps report using ("Number of Raw Files" in the result summary, rows in
+  `RunIdentifications.tsv`) differ from it. Spectronaut can use fewer runs than it is given without a
+  warning. Unset (the default), each step only prints its counts (`RUN COUNT ...`) in its task log
+  (`bin/check_run_count.sh`).
+- `tests/demo_liver/`: a test of `STAGE1_PSAR_DIR` and `EXPECTED_RUNS` on two demo liver runs, with a dry
+  mode that needs no Spectronaut or licence (`tests/demo_liver/run_test.sh --dry`).
 
 ### Fixed
 - Fixed the experiment-wide library counting every raw file twice. Pulsar stages 1 and 3 published their

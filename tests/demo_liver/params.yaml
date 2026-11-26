@@ -1,0 +1,6 @@
+# Fixed settings for run_test.sh. Paths (raw files, FASTA, licence, stage-1 folder) are passed on the
+# command line by run_test.sh. excludePattern must be empty here: an empty value given on the Nextflow
+# command line becomes `true`.
+batch_size: 1
+excludePattern: ""
+EXT_PSAR: "null"
